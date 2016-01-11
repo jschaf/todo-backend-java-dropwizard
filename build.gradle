@@ -46,3 +46,8 @@ jar {
         attributes 'Main-Class': mainClassName
     }
 }
+
+task stage {
+    dependsOn build
+    dependsOn shadowJar
+}
