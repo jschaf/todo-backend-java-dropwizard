@@ -1,5 +1,6 @@
 package com.example.todo;
 
+import com.example.todo.repositories.AllTodos;
 import com.example.todo.resources.TodoResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -18,7 +19,8 @@ public class TodoApplication extends Application<TodoConfiguration> {
 
     @Override
     public void run(TodoConfiguration configuration, Environment environment) throws Exception {
-        final TodoResource todoResource = new TodoResource();
+        final AllTodos allTodos = new AllTodos();
+        final TodoResource todoResource = new TodoResource(allTodos);
         environment.jersey().register(todoResource);
 
         final FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
