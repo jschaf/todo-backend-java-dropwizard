@@ -53,3 +53,7 @@ task stage {
     dependsOn build
     dependsOn shadowJar
 }
+
+run {
+    args 'server'
+}

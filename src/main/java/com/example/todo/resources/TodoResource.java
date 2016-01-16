@@ -7,7 +7,8 @@ import com.example.todo.repositories.AllTodos;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-@Path("/")
+@Path("/todo")
+@Produces(MediaType.APPLICATION_JSON)
 public class TodoResource {
 
     private final AllTodos allTodos;
@@ -18,16 +19,15 @@ public class TodoResource {
 
     @GET
     @Timed
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{id}")
-    public Todo getEntry(@PathParam("id") int id) {
-        return allTodos.findById(id);
+    @Path("{id}")
+    public Todo getById(@PathParam("id") int id) {
+        return allTodos.findById(id).orElse(null);
     }
 
     @POST
     @Timed
-    @Consumes(MediaType.APPLICATION_JSON)
-    public void putEntry(Todo todo) {
-
+    public Todo addTodo(Todo todo) {
+        allTodos.put(todo);
+        return todo;
     }
 }

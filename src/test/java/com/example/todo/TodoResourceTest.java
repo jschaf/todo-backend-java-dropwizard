@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -26,7 +28,7 @@ public class TodoResourceTest {
 
     @Before
     public void setUp() {
-        when(allTodos.findById(eq(23))).thenReturn(todo);
+        when(allTodos.findById(eq(23))).thenReturn(Optional.of(todo));
     }
 
     @After
@@ -37,7 +39,7 @@ public class TodoResourceTest {
 
     @Test
     public void testGetTodo() {
-        assertThat(resources.client().target("/23").request().get(Todo.class))
+        assertThat(resources.client().target("/todo/23").request().get(Todo.class))
                 .isEqualTo(todo);
         verify(allTodos).findById(23);
     }
