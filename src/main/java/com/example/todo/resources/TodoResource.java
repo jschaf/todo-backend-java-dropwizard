@@ -6,6 +6,7 @@ import com.example.todo.repositories.AllTodos;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/todo")
 @Produces(MediaType.APPLICATION_JSON)
@@ -15,6 +16,11 @@ public class TodoResource {
 
     public TodoResource(AllTodos allTodos) {
         this.allTodos = allTodos;
+    }
+
+    @GET
+    public Response getIndex() {
+        return Response.ok().build();
     }
 
     @GET
