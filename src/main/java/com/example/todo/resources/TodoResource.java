@@ -3,6 +3,7 @@ package com.example.todo.resources;
 import com.codahale.metrics.annotation.Timed;
 import com.example.todo.api.Todo;
 import com.example.todo.repositories.AllTodos;
+import com.google.inject.Inject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -14,6 +15,7 @@ public class TodoResource {
 
     private final AllTodos allTodos;
 
+    @Inject
     public TodoResource(AllTodos allTodos) {
         this.allTodos = allTodos;
     }
@@ -34,6 +36,7 @@ public class TodoResource {
     @Timed
     public Todo addTodo(Todo todo) {
         allTodos.put(todo);
+        System.out.println("Resource: " + allTodos);
         return todo;
     }
 }
