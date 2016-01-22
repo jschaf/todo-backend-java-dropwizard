@@ -1,10 +1,13 @@
 package com.example.todo;
 
+import com.bendb.dropwizard.jooq.JooqBundle;
+import com.bendb.dropwizard.jooq.JooqFactory;
 import com.example.todo.conf.Module;
 import com.example.todo.db.Database;
 import com.example.todo.resources.TodoResource;
 import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
+import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.flyway.FlywayBundle;
 import io.dropwizard.flyway.FlywayFactory;
@@ -15,6 +18,7 @@ import org.eclipse.jetty.servlets.CrossOriginFilter;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import java.util.EnumSet;
+import java.util.SortedMap;
 
 public class TodoApplication extends Application<TodoConfiguration> {
 
@@ -33,7 +37,6 @@ public class TodoApplication extends Application<TodoConfiguration> {
                 .setConfigClass(TodoConfiguration.class)
                 .build();
 
-
         // https://github.com/dropwizard/dropwizard-flyway
         FlywayBundle<TodoConfiguration> flywayBundle = new FlywayBundle<TodoConfiguration>() {
             @Override
@@ -47,8 +50,22 @@ public class TodoApplication extends Application<TodoConfiguration> {
             }
         };
 
+        // https://github.com/benjamin-bader/droptools/tree/master/dropwizard-jooq
+        JooqBundle<TodoConfiguration> jooqBundle = new JooqBundle<TodoConfiguration>() {
+            @Override
+            public PooledDataSourceFactory getDataSourceFactory(TodoConfiguration configuration) {
+                return configuration.getDataSourceFactory();
+            }
+
+            @Override
+            public JooqFactory getJooqFactory(TodoConfiguration configuration) {
+                return configuration.getJooqFactory();
+            }
+        };
+
         bootstrap.addBundle(guiceBundle);
         bootstrap.addBundle(flywayBundle);
+        bootstrap.addBundle(jooqBundle);
     }
 
     @Override

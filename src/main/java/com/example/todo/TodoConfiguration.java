@@ -1,5 +1,6 @@
 package com.example.todo;
 
+import com.bendb.dropwizard.jooq.JooqFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
@@ -31,5 +32,14 @@ public class TodoConfiguration extends Configuration {
 
     public FlywayFactory getFlywayFactory() {
         return flywayFactory;
+    }
+
+    @Valid
+    @NotNull
+    @JsonProperty("jooq")
+    private JooqFactory jooqFactory = new JooqFactory();
+
+    public JooqFactory getJooqFactory() {
+        return jooqFactory;
     }
 }
