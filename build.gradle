@@ -1,11 +1,9 @@
 
 plugins {
-//    id 'java'
+    id 'application'
+    id 'java'
     id 'com.github.johnrengelman.shadow' version '1.2.2'
 }
-
-apply plugin: 'application'
-
 
 // See: http://www.notsocomplex.com/2015/04/mrforms/how-to-run-integration-tests-with-gradle/
 sourceSets {
@@ -22,10 +20,8 @@ sourceSets {
 group 'com.example'
 version '1.0-SNAPSHOT'
 
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-
 
 repositories {
     mavenCentral()

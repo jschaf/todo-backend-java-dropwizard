@@ -34,6 +34,7 @@ public class TodoApplication extends Application<TodoConfiguration> {
                 .build();
 
 
+        // https://github.com/dropwizard/dropwizard-flyway
         FlywayBundle<TodoConfiguration> flywayBundle = new FlywayBundle<TodoConfiguration>() {
             @Override
             public PooledDataSourceFactory getDataSourceFactory(TodoConfiguration configuration) {
