@@ -1,6 +1,7 @@
 package com.example.todo;
 
 import com.example.todo.api.TodoEntry;
+import com.example.todo.models.tables.pojos.Todo;
 import com.example.todo.repositories.AllTodos;
 import com.example.todo.resources.TodoResource;
 import io.dropwizard.testing.junit.ResourceTestRule;
@@ -24,7 +25,7 @@ public class TodoResourceTest {
             .addResource(new TodoResource(allTodos))
             .build();
 
-    private static final TodoEntry TODO_ENTRY = new TodoEntry(23, "My Title", false, 1);
+    private static final Todo TODO_ENTRY = new Todo(23, "My Title", false, 1);
 
     @Before
     public void setUp() {
@@ -39,7 +40,7 @@ public class TodoResourceTest {
 
     @Test
     public void testGetTodo() {
-        assertThat(resources.client().target("/TODO_ENTRY/23").request().get(TodoEntry.class))
+        assertThat(resources.client().target("/todo/23").request().get(TodoEntry.class))
                 .isEqualTo(TODO_ENTRY);
         verify(allTodos).findById(23);
     }

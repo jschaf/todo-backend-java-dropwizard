@@ -1,7 +1,7 @@
 package com.example.todo.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.example.todo.api.TodoEntry;
+import com.example.todo.models.tables.pojos.Todo;
 import com.example.todo.repositories.AllTodos;
 import com.google.inject.Inject;
 
@@ -28,13 +28,13 @@ public class TodoResource {
     @GET
     @Timed
     @Path("{id}")
-    public TodoEntry getById(@PathParam("id") int id) {
+    public Todo getById(@PathParam("id") int id) {
         return allTodos.findById(id).orElse(null);
     }
 
     @POST
     @Timed
-    public TodoEntry addTodo(TodoEntry todoEntry) {
+    public Todo addTodo(Todo todoEntry) {
         allTodos.put(todoEntry);
         System.out.println("Resource: " + allTodos);
         return todoEntry;
