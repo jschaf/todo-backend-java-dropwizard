@@ -1,7 +1,6 @@
 package com.example.todo;
 
 import com.example.todo.api.TodoEntry;
-import com.example.todo.db.Database;
 import com.example.todo.repositories.AllTodos;
 import com.squarespace.jersey2.guice.BootstrapUtils;
 import io.dropwizard.testing.ConfigOverride;
@@ -53,7 +52,6 @@ public class IndexEndpointIT {
     @Before
     public void setUp() {
         client = ClientBuilder.newClient();
-        Database db = new Database();
         allTodos = new AllTodos(null);
     }
 

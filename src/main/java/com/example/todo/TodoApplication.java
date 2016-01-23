@@ -3,11 +3,9 @@ package com.example.todo;
 import com.bendb.dropwizard.jooq.JooqBundle;
 import com.bendb.dropwizard.jooq.JooqFactory;
 import com.example.todo.conf.Module;
-import com.example.todo.db.Database;
 import com.example.todo.resources.TodoResource;
 import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
-import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.db.PooledDataSourceFactory;
 import io.dropwizard.flyway.FlywayBundle;
 import io.dropwizard.flyway.FlywayFactory;
@@ -18,7 +16,6 @@ import org.eclipse.jetty.servlets.CrossOriginFilter;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import java.util.EnumSet;
-import java.util.SortedMap;
 
 public class TodoApplication extends Application<TodoConfiguration> {
 
@@ -29,7 +26,6 @@ public class TodoApplication extends Application<TodoConfiguration> {
     @Override
     public void initialize(Bootstrap<TodoConfiguration> bootstrap) {
         Module module = new Module();
-        module.setDatabase(new Database());
 
         GuiceBundle<TodoConfiguration> guiceBundle = GuiceBundle.<TodoConfiguration>newBuilder()
                 .addModule(module)
