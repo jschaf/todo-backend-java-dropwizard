@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
 
-public class Todo {
+public class TodoEntry {
 
     private int id;
 
@@ -14,10 +14,10 @@ public class Todo {
 
     private int order;
 
-    public Todo() {
+    public TodoEntry() {
     }
 
-    public Todo(int id, String title, boolean completed, int order) {
+    public TodoEntry(int id, String title, boolean completed, int order) {
         this.id = id;
         this.title = title;
         this.completed = completed;
@@ -71,11 +71,11 @@ public class Todo {
             return true;
         }
 
-        if (!(o instanceof Todo)) {
+        if (!(o instanceof TodoEntry)) {
             return false;
         }
 
-        Todo other = (Todo) o;
+        TodoEntry other = (TodoEntry) o;
         return id == other.id
                 && Objects.equals(title, other.title)
                 && completed == other.completed
@@ -87,7 +87,7 @@ public class Todo {
 
     @Override
     public String toString() {
-        return "Todo{" +
+        return "TodoEntry{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", completed=" + completed +

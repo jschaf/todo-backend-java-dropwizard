@@ -1,11 +1,8 @@
 package com.example.todo;
 
-import com.example.todo.TodoApplication;
-import com.example.todo.TodoConfiguration;
-import com.example.todo.api.Todo;
+import com.example.todo.api.TodoEntry;
 import com.example.todo.db.Database;
 import com.example.todo.repositories.AllTodos;
-import com.google.inject.Inject;
 import com.squarespace.jersey2.guice.BootstrapUtils;
 import io.dropwizard.testing.ConfigOverride;
 import io.dropwizard.testing.ResourceHelpers;
@@ -57,7 +54,7 @@ public class IndexEndpointIT {
     public void setUp() {
         client = ClientBuilder.newClient();
         Database db = new Database();
-        allTodos = new AllTodos(db);
+        allTodos = new AllTodos(null);
     }
 
     @After
@@ -85,17 +82,17 @@ public class IndexEndpointIT {
 
     @Test
     public void postToIndexReturnsPostedJson() {
-        Todo todo = new Todo(37, "Number 37", false, 2);
+        TodoEntry todoEntry = new TodoEntry(37, "Number 37", false, 2);
         allTodos.printHashMap();
 
 
-        Response response = client.target(SITE_URL + "todo")
+        Response response = client.target(SITE_URL + "todoEntry")
                 .request()
-                .post(Entity.json(todo));
+                .post(Entity.json(todoEntry));
 
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.readEntity(Todo.class)).isEqualTo(todo);
-        assertThat(allTodos.findById(37)).isEqualTo(Optional.of(todo));
+        assertThat(response.readEntity(TodoEntry.class)).isEqualTo(todoEntry);
+        assertThat(allTodos.findById(37)).isEqualTo(Optional.of(todoEntry));
     }
 
 }

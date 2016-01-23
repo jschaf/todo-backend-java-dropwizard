@@ -1,3 +1,4 @@
+import groovy.xml.MarkupBuilder
 import org.jooq.util.GenerationTool
 
 import javax.xml.bind.JAXB
@@ -16,24 +17,23 @@ buildscript {
 
 plugins {
     id 'application'
+    id 'base'
     id 'java'
     id 'com.github.johnrengelman.shadow' version '1.2.2'
+}
+
+project.ext {
+    configPath = "$rootProject.projectDir/"
+    configFile = configPath + 'todo-config.yml'
+    dropwizardVersion = '0.9.1'
+    h2Version = '1.4.190'
+    jooqVersion = '3.7.2'
 }
 
 // See: http://www.notsocomplex.com/2015/04/mrforms/how-to-run-integration-tests-with-gradle/
 sourceSets {
     generated {
-        java {
-            srcDir 'generated/src/main/java'
-        }
-    }
-    main {
-        java {
-            srcDirs += [generated.allSource]
-        }
-    }
-    test {
-        srcDirs += [generated.allSource]
+        java.srcDir 'src/generated/java'
     }
     integrationTest {
         java {
@@ -56,16 +56,7 @@ repositories {
     mavenCentral()
 }
 
-project.ext {
-    configPath = "$rootProject.projectDir/"
-    configFile = configPath + 'todo-config.yml'
-    dropwizardVersion = '0.9.1'
-    h2Version = '1.4.190'
-    jooqVersion = '3.7.2'
-}
-
 mainClassName = "com.example.todo.TodoApplication"
-
 
 dependencies {
     compile (
@@ -83,6 +74,7 @@ dependencies {
             'io.dropwizard.modules:dropwizard-flyway:0.9.0-1',
             "io.dropwizard:dropwizard-testing:$dropwizardVersion",
 
+            'org.hibernate:hibernate-distribution:3.5.4-Final',
             "org.jooq:jooq:$jooqVersion"
     )
     testCompile (
@@ -104,42 +96,56 @@ dependencies {
     )
 }
 
-// https://github.com/jOOQ/jOOQ/tree/master/jOOQ-examples/jOOQ-codegen-gradle
-def writer = new StringWriter()
-def xml = new groovy.xml.MarkupBuilder(writer)
-        .configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.7.0.xsd') {
-    jdbc() {
-        driver('org.h2.Driver')
-        url('jdbc:h2:~/todo-db')
-        user('sa')
-        password('sa')
-    }
-    generator() {
-        database() {
-            inputSchema('todo')
-        }
+task generateJooqCode {
+    description = 'Generate Java API for the database.'
 
-        // Watch out for this caveat when using MarkupBuilder with "reserved names"
-        // - https://github.com/jOOQ/jOOQ/issues/4797
-        // - http://stackoverflow.com/a/11389034/521799
-        // - https://groups.google.com/forum/#!topic/jooq-user/wi4S9rRxk4A
-        generate([:]) {
-            pojos true
-            daos true
+    // https://github.com/jOOQ/jOOQ/tree/master/jOOQ-examples/jOOQ-codegen-gradle
+    def writer = new StringWriter()
+    def xml = new MarkupBuilder(writer)
+            .configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.7.0.xsd') {
+        jdbc() {
+            driver('org.h2.Driver')
+            url('jdbc:h2:~/todo-db')
+            user('sa')
+            password('sa')
         }
-        target() {
-            packageName('com.example.todo.models')
-            directory('generated/src/main/java')
+        generator() {
+            database() {
+                inputSchema('TODO')
+            }
+
+            // Watch out for this caveat when using MarkupBuilder with "reserved names"
+            // - https://github.com/jOOQ/jOOQ/issues/4797
+            // - http://stackoverflow.com/a/11389034/521799
+            // - https://groups.google.com/forum/#!topic/jooq-user/wi4S9rRxk4A
+            generate([:]) {
+                pojos true
+                immutablePojos true
+                daos false
+                fluentSetters true
+                validationAnnotations true
+                jpaAnnotations true
+                globalObjectReferences true
+            }
+            target() {
+                packageName('com.example.todo.models')
+                directory("src/generated/java")
+            }
         }
     }
+
+    // Run the code generator
+    GenerationTool.generate(
+            JAXB.unmarshal(new StringReader(writer.toString()),
+                    org.jooq.util.jaxb.Configuration.class)
+    )
 }
 
-// Run the code generator
-// ----------------------
-GenerationTool.generate(
-    JAXB.unmarshal(new StringReader(writer.toString()),
-            org.jooq.util.jaxb.Configuration.class)
-)
+clean {
+    delete "src/generated"
+}
+
+compileJava.dependsOn generateJooqCode
 
 // https://github.com/johnrengelman/shadow
 shadowJar {

@@ -1,10 +1,10 @@
-DROP SCHEMA todo IF EXISTS;
+DROP SCHEMA todoEntry IF EXISTS;
 
-CREATE SCHEMA todo;
+CREATE SCHEMA todoEntry;
 
-CREATE SEQUENCE todo.s_todo_id START WITH 1;
+CREATE SEQUENCE todoEntry.s_todo_id START WITH 1;
 
-CREATE TABLE todo.todo (
+CREATE TABLE todoEntry.todoEntry (
   id INT NOT NULL,
   title VARCHAR(256) NOT NULL,
   is_complete BOOLEAN,

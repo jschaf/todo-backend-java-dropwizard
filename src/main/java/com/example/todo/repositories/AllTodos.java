@@ -1,36 +1,44 @@
 package com.example.todo.repositories;
 
-import com.example.todo.api.Todo;
-import com.example.todo.db.Database;
-import com.google.inject.Inject;
+import static com.example.todo.models.Tables.*;
 
+import com.example.todo.api.TodoEntry;
+import com.example.todo.db.Database;
+import com.example.todo.models.tables.pojos.Todo;
+import com.google.inject.Inject;
+import org.jooq.DSLContext;
+
+import javax.ws.rs.core.Context;
 import java.util.Optional;
 
 public class AllTodos {
 
 
-    private Database db;
+    private DSLContext database;
 
     @Inject
-    public AllTodos(Database db) {
-        this.db = db;
+    public AllTodos(@Context DSLContext database) {
+        this.database = database;
     }
 
-    public Optional<Todo> findById(int id) {
-        return Optional.ofNullable(db.getTodoStore().get(id));
+    public Optional<TodoEntry> findById(int id) {
+        database.select().from(TODO).where(TODO.ID.eq(id)).fetchOneInto(Todo.class);
+        return Optional.ofNullable(null);
     }
 
-    public void put(Todo todo) {
-        db.getTodoStore().put(todo.getId(), todo);
+    public void put(TodoEntry todoEntry) {
+
+
+       // db.getTodoStore().put(todoEntry.getId(), todoEntry);
     }
 
     public void printHashMap() {
-        for (Integer key :
-                db.getTodoStore().keySet()) {
-            String id = key.toString();
-            String todo = db.getTodoStore().get(key).toString();
-            System.out.println(id + ": " + todo);
-        }
+//        for (Integer key :
+//                db.getTodoStore().keySet()) {
+//            String id = key.toString();
+//            String todo = db.getTodoStore().get(key).toString();
+//            System.out.println(id + ": " + todo);
+//        }
     }
 
 }

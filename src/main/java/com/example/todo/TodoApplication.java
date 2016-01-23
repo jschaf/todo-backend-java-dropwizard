@@ -84,7 +84,7 @@ public class TodoApplication extends Application<TodoConfiguration> {
 
     @Override
     public String getName() {
-       return "Todo";
+       return "TodoEntry";
     }
 
 }

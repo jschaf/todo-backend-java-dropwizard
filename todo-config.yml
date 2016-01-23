@@ -3,7 +3,7 @@ database:
   driverClass: org.h2.Driver
   user: sa
   password: sa
-  url: jdbc:h2:~/todo-db
+  url: jdbc:h2:~/todoEntry-db
 
 
 flyway:
@@ -12,7 +12,7 @@ flyway:
     - db/migration
 
   schemas:
-    - todo
+    - todoEntry
 
 jooq:
   # The flavor of SQL to generate. If not specified, it will be inferred from the JDBC connection URL.  (default: null)
