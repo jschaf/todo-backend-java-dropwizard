@@ -11,6 +11,7 @@ buildscript {
 
     dependencies {
         classpath "com.h2database:h2:1.4.190"
+        classpath 'org.flywaydb:flyway-gradle-plugin:3.2.1'
         classpath 'org.jooq:jooq-codegen:3.7.2'
     }
 }
@@ -20,6 +21,7 @@ plugins {
     id 'base'
     id 'java'
     id 'com.github.johnrengelman.shadow' version '1.2.2'
+    id 'org.flywaydb.flyway' version '3.2.1'
 }
 
 project.ext {
@@ -33,7 +35,7 @@ project.ext {
 // See: http://www.notsocomplex.com/2015/04/mrforms/how-to-run-integration-tests-with-gradle/
 sourceSets {
     main {
-        java.srcDirs = ['src/main/java', 'src/generated/java']
+        java.srcDir 'src/generated/java'
     }
     integrationTest {
         java {
@@ -98,50 +100,68 @@ dependencies {
     )
 }
 
-task generateJooqCode {
-    description = 'Generate Java API for the database.'
-
-    // https://github.com/jOOQ/jOOQ/tree/master/jOOQ-examples/jOOQ-codegen-gradle
-    def writer = new StringWriter()
-    def xml = new MarkupBuilder(writer)
-            .configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.7.0.xsd') {
-        jdbc() {
-            driver('org.h2.Driver')
-            url('jdbc:h2:~/todo-db')
-            user('sa')
-            password('sa')
-        }
-        generator() {
-            database() {
-                inputSchema('TODO')
-            }
-
-            // Watch out for this caveat when using MarkupBuilder with "reserved names"
-            // - https://github.com/jOOQ/jOOQ/issues/4797
-            // - http://stackoverflow.com/a/11389034/521799
-            // - https://groups.google.com/forum/#!topic/jooq-user/wi4S9rRxk4A
-            generate([:]) {
-                pojos false
-                immutablePojos false
-                daos false
-                fluentSetters true
-                validationAnnotations true
-                jpaAnnotations true
-                globalObjectReferences true
-            }
-            target() {
-                packageName('com.example.todo.models')
-                directory("src/generated/java")
-            }
-        }
-    }
-
-    // Run the code generator
-    GenerationTool.generate(
-            JAXB.unmarshal(new StringReader(writer.toString()),
-                    org.jooq.util.jaxb.Configuration.class)
-    )
+flyway {
+    url 'jdbc:h2:~/todo-db'
+    user = 'sa'
+    password = 'sa'
 }
+
+// https://github.com/flyway/flyway/issues/775
+// Flyway needs to support Java migrations, so it depends on testClasses.
+// That results in a circular dependency for jOOQ because we need migrations
+// to run, then jOOQ code-gen and then compileJava
+project.afterEvaluate {
+    flywayClean.dependsOn -= testClasses
+    flywayMigrate.dependsOn = [processResources, processTestResources]
+}
+
+task generateJooqCode {
+//    description = 'Generate Java API for the database.'
+    doLast {
+        // https://github.com/jOOQ/jOOQ/tree/master/jOOQ-examples/jOOQ-codegen-gradle
+        def writer = new StringWriter()
+        def xml = new MarkupBuilder(writer)
+                .configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.7.0.xsd') {
+            jdbc() {
+                driver('org.h2.Driver')
+                url('jdbc:h2:~/todo-db')
+                user('sa')
+                password('sa')
+            }
+            generator() {
+                database() {
+                    inputSchema('TODO')
+                }
+
+                // Watch out for this caveat when using MarkupBuilder with "reserved names"
+                // - https://github.com/jOOQ/jOOQ/issues/4797
+                // - http://stackoverflow.com/a/11389034/521799
+                // - https://groups.google.com/forum/#!topic/jooq-user/wi4S9rRxk4A
+                generate([:]) {
+                    pojos false
+                    immutablePojos false
+                    daos false
+                    fluentSetters true
+                    validationAnnotations true
+                    jpaAnnotations true
+                    globalObjectReferences true
+                }
+                target() {
+                    packageName('com.example.todo.models')
+                    directory("src/generated/java")
+                }
+            }
+        }
+
+        // Run the code generator
+        GenerationTool.generate(
+                JAXB.unmarshal(new StringReader(writer.toString()),
+                        org.jooq.util.jaxb.Configuration.class)
+        )
+    }
+}
+
+generateJooqCode.dependsOn flywayMigrate
 
 clean {
     delete "src/generated"
