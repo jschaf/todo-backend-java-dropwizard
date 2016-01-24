@@ -1,21 +1,20 @@
 package com.example.todo;
 
 import com.example.todo.api.TodoEntry;
-import com.example.todo.repositories.AllTodos;
 import com.squarespace.jersey2.guice.BootstrapUtils;
-import io.dropwizard.testing.ConfigOverride;
 import io.dropwizard.testing.ResourceHelpers;
 import io.dropwizard.testing.junit.DropwizardAppRule;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,25 +33,23 @@ public class IndexEndpointIT {
     @ClassRule
     public static final DropwizardAppRule<TodoConfiguration> RULE = new DropwizardAppRule<>(
             TodoApplication.class,
-            CONFIG_PATH,
-            ConfigOverride.config("database.url", "jdbc:h2:" + TMP_FILE));
+            CONFIG_PATH
+//            , ConfigOverride.config("database.url", "jdbc:h2:" + TMP_FILE)
+            );
 
 
     private final String SITE_URL = String.format("http://localhost:%d/", RULE.getLocalPort());
 
     private Client client;
 
-    private static AllTodos allTodos;
-
-    @BeforeClass
-    public void migrateDb() throws Exception {
-        RULE.getApplication().run("db", "migrate", CONFIG_PATH);
-    }
+//    @BeforeClass
+//    public static void migrateDb() throws Exception {
+////        RULE.getApplication().run("db", "migrate", CONFIG_PATH);
+//    }
 
     @Before
     public void setUp() {
         client = ClientBuilder.newClient();
-        allTodos = new AllTodos(null);
     }
 
     @After
@@ -81,16 +78,14 @@ public class IndexEndpointIT {
     @Test
     public void postToIndexReturnsPostedJson() {
         TodoEntry todoEntry = new TodoEntry(37, "Number 37", false, 2);
-        allTodos.printHashMap();
 
 
-        Response response = client.target(SITE_URL + "todoEntry")
+        Response response = client.target(SITE_URL + "todo")
                 .request()
                 .post(Entity.json(todoEntry));
 
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.readEntity(TodoEntry.class)).isEqualTo(todoEntry);
-        assertThat(allTodos.findById(37)).isEqualTo(Optional.of(todoEntry));
     }
 
 }

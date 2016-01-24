@@ -9,18 +9,17 @@ import io.dropwizard.flyway.FlywayFactory;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-public class TodoConfiguration extends Configuration {
+class TodoConfiguration extends Configuration {
 
     @Valid
     @NotNull
+    @JsonProperty("database")
     private DataSourceFactory database = new DataSourceFactory();
 
-    @JsonProperty("database")
     public DataSourceFactory getDataSourceFactory() {
         return database;
     }
 
-    @JsonProperty("database")
     public void setDataSourceFactory(DataSourceFactory dataSourceFactory) {
         this.database = dataSourceFactory;
     }
@@ -34,8 +33,6 @@ public class TodoConfiguration extends Configuration {
         return flywayFactory;
     }
 
-    @Valid
-    @NotNull
     @JsonProperty("jooq")
     private JooqFactory jooqFactory = new JooqFactory();
 

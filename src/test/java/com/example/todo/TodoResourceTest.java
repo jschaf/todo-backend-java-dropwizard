@@ -1,7 +1,6 @@
 package com.example.todo;
 
 import com.example.todo.api.TodoEntry;
-import com.example.todo.models.tables.pojos.Todo;
 import com.example.todo.repositories.AllTodos;
 import com.example.todo.resources.TodoResource;
 import io.dropwizard.testing.junit.ResourceTestRule;
@@ -13,7 +12,6 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 public class TodoResourceTest {
@@ -22,10 +20,10 @@ public class TodoResourceTest {
 
     @ClassRule
     public static final ResourceTestRule resources = ResourceTestRule.builder()
-            .addResource(new TodoResource(allTodos))
+            .addResource(new TodoResource())
             .build();
 
-    private static final Todo TODO_ENTRY = new Todo(23, "My Title", false, 1);
+    private static final TodoEntry TODO_ENTRY = new TodoEntry(23, "My Title", false, 1);
 
     @Before
     public void setUp() {

@@ -16,7 +16,7 @@ flyway:
 
 jooq:
   # The flavor of SQL to generate. If not specified, it will be inferred from the JDBC connection URL.  (default: null)
-  dialect: null
+#  dialect: null
   # Whether to write generated SQL to a logger before execution.  (default: no)
   logExecutedSql: yes
   # Whether to include schema names in generated SQL.  (default: yes)

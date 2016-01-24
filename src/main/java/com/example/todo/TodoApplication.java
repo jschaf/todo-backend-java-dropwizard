@@ -2,11 +2,9 @@ package com.example.todo;
 
 import com.bendb.dropwizard.jooq.JooqBundle;
 import com.bendb.dropwizard.jooq.JooqFactory;
-import com.example.todo.conf.Module;
 import com.example.todo.resources.TodoResource;
-import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
-import io.dropwizard.db.PooledDataSourceFactory;
+import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.flyway.FlywayBundle;
 import io.dropwizard.flyway.FlywayFactory;
 import io.dropwizard.setup.Bootstrap;
@@ -17,7 +15,7 @@ import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
 import java.util.EnumSet;
 
-public class TodoApplication extends Application<TodoConfiguration> {
+class TodoApplication extends Application<TodoConfiguration> {
 
     public static void main(String[] args) throws Exception {
         new TodoApplication().run(args);
@@ -25,18 +23,11 @@ public class TodoApplication extends Application<TodoConfiguration> {
 
     @Override
     public void initialize(Bootstrap<TodoConfiguration> bootstrap) {
-        Module module = new Module();
-
-        GuiceBundle<TodoConfiguration> guiceBundle = GuiceBundle.<TodoConfiguration>newBuilder()
-                .addModule(module)
-                .enableAutoConfig(getClass().getPackage().getName())
-                .setConfigClass(TodoConfiguration.class)
-                .build();
 
         // https://github.com/dropwizard/dropwizard-flyway
         FlywayBundle<TodoConfiguration> flywayBundle = new FlywayBundle<TodoConfiguration>() {
             @Override
-            public PooledDataSourceFactory getDataSourceFactory(TodoConfiguration configuration) {
+            public DataSourceFactory getDataSourceFactory(TodoConfiguration configuration) {
                 return configuration.getDataSourceFactory();
             }
 
@@ -49,7 +40,7 @@ public class TodoApplication extends Application<TodoConfiguration> {
         // https://github.com/benjamin-bader/droptools/tree/master/dropwizard-jooq
         JooqBundle<TodoConfiguration> jooqBundle = new JooqBundle<TodoConfiguration>() {
             @Override
-            public PooledDataSourceFactory getDataSourceFactory(TodoConfiguration configuration) {
+            public DataSourceFactory getDataSourceFactory(TodoConfiguration configuration) {
                 return configuration.getDataSourceFactory();
             }
 
@@ -59,7 +50,6 @@ public class TodoApplication extends Application<TodoConfiguration> {
             }
         };
 
-        bootstrap.addBundle(guiceBundle);
         bootstrap.addBundle(flywayBundle);
         bootstrap.addBundle(jooqBundle);
     }
@@ -80,7 +70,7 @@ public class TodoApplication extends Application<TodoConfiguration> {
 
     @Override
     public String getName() {
-       return "TodoEntry";
+       return "TodoApplication";
     }
 
 }

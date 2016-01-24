@@ -1,63 +1,45 @@
 package com.example.todo.api;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
 
-public class TodoEntry {
+public final class TodoEntry {
 
-    private int id;
+    private final int id;
 
-    private String title;
+    private final String title;
 
-    private boolean completed;
+    private final boolean completed;
 
-    private int order;
+    private final int order;
 
-    public TodoEntry() {
-    }
-
-    public TodoEntry(int id, String title, boolean completed, int order) {
+    @JsonCreator
+    public TodoEntry(@JsonProperty("id") int id,
+                     @JsonProperty("title") String title,
+                     @JsonProperty("completed") boolean completed,
+                     @JsonProperty("order") int order) {
         this.id = id;
         this.title = title;
         this.completed = completed;
         this.order = order;
     }
 
-    @JsonProperty
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @JsonProperty
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    @JsonProperty
     public boolean isCompleted() {
         return completed;
     }
 
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-    }
-
-    @JsonProperty
     public int getOrder() {
         return order;
-    }
-
-    public void setOrder(int order) {
-        this.order = order;
     }
 
     @Override
@@ -80,8 +62,6 @@ public class TodoEntry {
                 && Objects.equals(title, other.title)
                 && completed == other.completed
                 && order == other.order;
-
-
     }
 
 
